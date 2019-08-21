@@ -9,6 +9,10 @@
 	model = "AVM FRITZ!Box 7520";
 	compatible = "avm,fritzbox-7520";
 
+	chosen {
+		bootargs-append = " coherent_pool=4M";
+	};
+
 	aliases {
 		led-boot = &power_green;
 		led-failsafe = &info_red;
