@@ -75,7 +75,8 @@ define Build/InstallDev
 endef
 
 EXTRA_CFLAGS:= \
-	-I$(STAGING_DIR)/usr/include
+	-I$(STAGING_DIR)/usr/include #\
+#	-DACA_DMA_COUNTER=1
 
 MAKE_OPTS:= \
 	$(KERNEL_MAKE_FLAGS) \
