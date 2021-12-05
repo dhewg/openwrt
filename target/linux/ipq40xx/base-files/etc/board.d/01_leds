@@ -21,6 +21,7 @@ avm,fritzbox-4040)
 	ucidef_set_led_netdev "wan" "WAN" "green:wan" "eth1"
 	ucidef_set_led_switch "lan" "LAN" "green:lan" "switch0" "0x1e"
 	;;
+avm,fritzbox-7520 |\
 avm,fritzbox-7530 |\
 glinet,gl-b1300 |\
 mikrotik,lhgg-60ad)
