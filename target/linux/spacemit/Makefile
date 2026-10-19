@@ -9,6 +9,7 @@ SUBTARGETS:=k1
 FEATURES:=boot-part dt emmc erofs fpu gpio legacy-sdcard pci pcie pinctrl regulator rootfs-part rtc separate_ramdisk usb
 
 KERNEL_PATCHVER:=6.18
+KERNEL_TESTING_PATCHVER:=7.3
 
 include $(INCLUDE_DIR)/target.mk
 
