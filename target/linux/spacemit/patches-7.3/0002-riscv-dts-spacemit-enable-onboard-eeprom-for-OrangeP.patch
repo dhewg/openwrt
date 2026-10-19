@@ -1,4 +1,4 @@
-From dd459ba73344d9f763edf261be50547e583da12d Mon Sep 17 00:00:00 2001
+From 19e4659ab32d32d8108ce9d23b803b703471dca1 Mon Sep 17 00:00:00 2001
 From: Chukun Pan <amadeus@jmu.edu.cn>
 Date: Tue, 1 Sep 2026 16:00:10 +0800
 Subject: [PATCH] riscv: dts: spacemit: enable onboard eeprom for OrangePi

@@ -1,4 +1,4 @@
-From 95f8bb2a9ec4cd5967ccb5726795c376160a9ba7 Mon Sep 17 00:00:00 2001
+From 0cda075181c8115fadba28526c08583f9185bebc Mon Sep 17 00:00:00 2001
 From: Chukun Pan <amadeus@jmu.edu.cn>
 Date: Sun, 2 Aug 2026 18:01:01 +0800
 Subject: [PATCH] riscv: dts: spacemit: sort nodes on OrangePi RV2

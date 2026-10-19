@@ -1,4 +1,4 @@
-From 5fcb90fed08f34afb6e1f92fef55250c6f77bbb0 Mon Sep 17 00:00:00 2001
+From cfc7e82b0ad2b7b8149a67dc77a5458fd2a8023e Mon Sep 17 00:00:00 2001
 From: Andre Heider <a.heider@gmail.com>
 Date: Tue, 4 Aug 2026 15:32:32 +0200
 Subject: [PATCH] riscv: dts: spacemit: k1-musepi-pro: add cpu scaling

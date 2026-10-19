@@ -1,4 +1,4 @@
-From d5b903ae49426a275bbdc7fa425a88eedf4ddd3b Mon Sep 17 00:00:00 2001
+From 51a75756b02e1ce484e52b579d37737c59b9ae57 Mon Sep 17 00:00:00 2001
 From: Vincent Legoll <vincent.legoll@gmail.com>
 Date: Tue, 4 Aug 2026 15:32:33 +0200
 Subject: [PATCH] riscv: dts: spacemit: orangepi-rv2: Add cpu scaling for K1
