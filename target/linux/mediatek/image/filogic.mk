@@ -3999,7 +3999,8 @@ define Device/tplink_vx830v
   DEVICE_PACKAGES := kmod-sfp kmod-usb3 \
 	    kmod-phy-airoha-en8811h airoha-en8811h-firmware \
 	    kmod-mt7915e kmod-mt7986-firmware mt7986-wo-firmware \
-	    kmod-leds-gpio kmod-ledtrig-network kmod-usb-ledtrig-usbport
+	    kmod-leds-gpio kmod-ledtrig-network kmod-usb-ledtrig-usbport \
+	    rbctl-dsl
 endef
 TARGET_DEVICES += tplink_vx830v
 
