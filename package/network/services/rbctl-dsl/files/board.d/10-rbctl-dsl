@@ -1,0 +1,18 @@
+# rbctl-dsl — declare the remote EcoNet xDSL modem in board.json.
+
+. /lib/functions.sh
+. /lib/functions/uci-defaults.sh
+
+board_config_update
+
+ucidef_add_vdsl_modem "b" "av" "ptm"
+
+json_select_object dsl
+	json_select_object rbctl
+		json_add_string config_iface "lan0.500"
+	json_select ..
+json_select ..
+
+board_config_flush
+
+exit 0

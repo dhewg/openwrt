@@ -1,0 +1,62 @@
+#!/bin/sh
+#
+# dsl_defaults — first-boot UCI enrichment for the rbctl remote xDSL board.
+#
+# The modem declaration (annex/tone/xfer_mode → network.dsl) now comes
+# from board.json: /etc/board.d/10-rbctl-dsl writes dsl.modem via the
+# generic ucidef_add_vdsl_modem(), and config_generate materializes it.
+#
+# This script adds only what the generic vocabulary cannot express:
+#  - the rbctl-specific network.dsl options the daemon reads
+#  - the management VLAN device toward the remote board
+#
+# Data links themselves are NOT pre-provisioned: with no link sections
+# and xfer_mode=auto the daemon queues one untagged PTM link at line
+# open (zero-config default). Operators add named network.<name>=ptm
+# or =atm sections — up to 8, mixing both types — via LuCI or UCI.
+#
+# Every option is set per-key: re-running is a no-op and no section
+# created by config_generate or the operator is ever replaced.
+
+. /lib/functions.sh
+. /lib/functions/uci-defaults.sh
+
+# Management interface from board.json (written by our board.d hook),
+# with a fallback matching the daemon default.
+CFG_IFACE="$(jsonfilter -s "$(cat /etc/board.json 2>/dev/null)" \
+	-e 1 '@.dsl.rbctl.config_iface' 2>/dev/null)"
+[ -n "$CFG_IFACE" ] || CFG_IFACE="lan0.500"
+
+parent="${CFG_IFACE%.*}"
+vid="${CFG_IFACE##*.}"
+
+# ── Management VLAN device (netifd-managed) ────────────────────────
+# The remote board is reached on this fixed management VLAN. Declare it
+# as a UCI device so netifd creates and brings it up at boot, before
+# dsl_control (START=97) needs it. Without carrier on the parent, all
+# 0x88B5 frames on the VLAN are silently dropped by the kernel.
+if ! uci -q show network | grep -q "${CFG_IFACE}"; then
+	uci -q batch <<-EOF
+		set network.dsl_mgmt='device'
+		set network.dsl_mgmt.name='$CFG_IFACE'
+		set network.dsl_mgmt.ifname='$parent'
+		set network.dsl_mgmt.type='8021q'
+		set network.dsl_mgmt.vid='$vid'
+EOF
+fi
+
+# ── rbctl-specific modem options ───────────────────────────────────
+# annex/tone/xfer_mode come from board.json via config_generate; these
+# keys belong to the daemon and have no generic ucidef vocabulary.
+uci -q batch <<-EOF
+	set network.dsl='dsl'
+	set network.dsl.line_mode='vdsl'
+	set network.dsl.bitswap='1'
+	set network.dsl.sra='1'
+	set network.dsl.transport_vlan='0'
+	set network.dsl.config_iface='$CFG_IFACE'
+EOF
+
+uci -q commit network
+
+exit 0
