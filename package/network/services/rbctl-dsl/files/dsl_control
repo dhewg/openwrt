@@ -1,0 +1,66 @@
+#!/bin/sh /etc/rc.common
+#
+# dsl_control — procd init script for rbctl-dsl.
+#
+# The daemon reads all line configuration from UCI (network.dsl +
+# network.atm).  This script only passes the management interface and
+# the hotplug notify-script path, then lets procd manage respawning.
+#
+# Install as /etc/init.d/dsl_control
+
+START=97
+USE_PROCD=1
+
+PROG=/sbin/rbctl-dsl
+NOTIFY=/sbin/dsl_notify.sh
+
+service_triggers() {
+	procd_add_reload_trigger network
+}
+
+start_service() {
+	local config_iface parent vid
+
+	config_load network
+	config_get config_iface dsl config_iface "lan0.500"
+
+	# Ensure the management VLAN exists and is up.  netifd should have
+	# created it from the UCI device section, but belt-and-suspenders.
+	parent="${config_iface%.*}"
+	vid="${config_iface##*.}"
+	if [ "$parent" != "$config_iface" ] && \
+	   ! ip link show "$config_iface" >/dev/null 2>&1; then
+		ip link add link "$parent" name "$config_iface" type vlan id "$vid" 2>/dev/null
+	fi
+	# Bring up the parent first — without carrier on lan0, all 0x88B5
+	# frames on lan0.500 are dropped by the kernel.
+	ip link set "$parent" up 2>/dev/null
+	ip link set "$config_iface" up 2>/dev/null
+
+	# Wait up to 5s for carrier so the daemon doesn't race the PHY.
+	i=0
+	while [ $i -lt 50 ] && \
+	      [ "$(cat /sys/class/net/$config_iface/carrier 2>/dev/null)" != "1" ]; do
+		sleep 0.1
+		i=$((i + 1))
+	done
+
+	procd_open_instance
+	procd_set_param command "$PROG" \
+		daemon \
+		-i "$config_iface" \
+		-n "$NOTIFY" \
+		--syslog
+	procd_set_param respawn
+	procd_set_param term_timeout 10
+	procd_set_param stdout 1
+	procd_set_param stderr 1
+	procd_close_instance
+}
+
+stop_service() {
+	# Synthesize a final DOWN event so LEDs turn off and PPPoA stops.
+	DSL_NOTIFICATION_TYPE="DSL_INTERFACE_STATUS" \
+	DSL_INTERFACE_STATUS="DOWN" \
+		"$NOTIFY" 2>/dev/null
+}
