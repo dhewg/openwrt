@@ -1,0 +1,25 @@
+# rbctl-dsl — declare the remote EcoNet xDSL modem in board.json.
+#
+# Sourced by /bin/board_detect at first boot (and every config
+# regeneration). The modem declaration itself is generic
+# (dsl.modem via ucidef_add_vdsl_modem, consumed natively by
+# config_generate and luci-base); everything rbctl-specific lives in
+# /usr/share/rbctl/ucidef.sh so base-files stays untouched.
+#
+# Guard: this file is shipped by the rbctl-dsl package, so it only
+# exists on boards with the remote xDSL board — the binary check is
+# belt-and-suspenders against a stale board.d on an uninstalled system.
+
+if [ -x /usr/sbin/rbctl-dsl ]; then
+	. /lib/functions.sh
+	. /lib/functions/uci-defaults.sh
+	. /usr/share/rbctl/ucidef.sh
+
+	board_config_update
+
+	ucidef_add_rbctl_dsl "lan0.500"
+
+	board_config_flush
+fi
+
+exit 0
