@@ -1,0 +1,253 @@
+--- metrics-avm,fritzbox-7530	2026-11-06 14:52:45.201344901 +0100
++++ metrics-tplink,vx830v	2026-11-06 14:53:22.768817120 +0100
+@@ -1,230 +1,31 @@
+ {
+-	"api_version": "4.23.1",
+-	"firmware_version": "8.13.1.12.1.7",
+-	"chipset": "Lantiq-VRX500",
+-	"driver_version": "1.11.1",
+ 	"state": "Showtime with TC-Layer sync",
+ 	"state_num": 7,
+ 	"up": true,
+-	"uptime": 70,
+-	"atu_c": {
+-		"vendor_id": [
+-			181,
+-			0,
+-			66,
+-			68,
+-			67,
+-			77,
+-			178,
+-			33
+-		],
+-		"vendor": "Broadcom 178.33",
+-		"system_vendor_id": [
+-			181,
+-			0,
+-			66,
+-			68,
+-			67,
+-			77,
+-			0,
+-			0
+-		],
+-		"system_vendor": "Broadcom",
+-		"version": [
+-			49,
+-			57,
+-			46,
+-			48,
+-			46,
+-			52,
+-			49,
+-			46,
+-			50,
+-			32,
+-			86,
+-			69,
+-			95,
+-			49,
+-			49,
+-			95
+-		],
+-		"serial": [
+-			65,
+-			65,
+-			49,
+-			52,
+-			52,
+-			54,
+-			70,
+-			69,
+-			48,
+-			90,
+-			87,
+-			45,
+-			48,
+-			56,
+-			0,
+-			0,
+-			0,
+-			0,
+-			0,
+-			0,
+-			0,
+-			0,
+-			0,
+-			0,
+-			0,
+-			0,
+-			0,
+-			0,
+-			0,
+-			0,
+-			0,
+-			0
+-		]
+-	},
+-	"power_state": "L0 - Synchronized",
+-	"power_state_num": 0,
+-	"xtse": [
+-		0,
+-		0,
+-		0,
+-		0,
+-		0,
+-		0,
+-		0,
+-		2
+-	],
+-	"annex": "B",
+-	"standard": "G.993.2",
++	"uptime": 864,
++	"mode": "G.993.2 (VDSL2)",
++	"annex": "A",
+ 	"profile": "17a",
+-	"mode": "G.993.2 (VDSL2, Profile 17a, with down- and upstream vectoring)",
+ 	"upstream": {
+-		"vector": true,
+-		"trellis": true,
+-		"bitswap": false,
+-		"retx": true,
+-		"virtual_noise": false,
+-		"ra_mode": "At initialization",
+-		"ra_mode_num": 1,
++		"data_rate": 36998,
++		"attndr": 48351,
++		"snr": 131,
++		"latn": 0,
++		"satn": 0,
++		"actatp": -5,
+ 		"interleave_delay": 0,
+-		"inp": 43,
+-		"data_rate": 36999000,
+-		"latn": 7.5999999999999996,
+-		"satn": 7.4000000000000004,
+-		"snr": 9.6999999999999993,
+-		"actatp": -2.3999999999999999,
+-		"attndr": 44337000,
+-		"mineftr": 36988000
++		"inp": 0
+ 	},
+ 	"downstream": {
+-		"vector": true,
+-		"trellis": true,
+-		"bitswap": false,
+-		"retx": true,
+-		"virtual_noise": false,
+-		"ra_mode": "At initialization",
+-		"ra_mode_num": 1,
+-		"interleave_delay": 130,
+-		"inp": 67,
+-		"data_rate": 111881000,
+-		"latn": 10.199999999999999,
+-		"satn": 10.199999999999999,
+-		"snr": 13.5,
+-		"actatp": 11.4,
+-		"attndr": 134957632,
+-		"mineftr": 111881000
+-	},
+-	"olr": {
+-		"downstream": {
+-			"bitswap": {
+-				"requested": 0,
+-				"executed": 0,
+-				"rejected": 0,
+-				"timeout": 0
+-			},
+-			"sra": {
+-				"requested": 0,
+-				"executed": 0,
+-				"rejected": 0,
+-				"timeout": 0
+-			},
+-			"sos": {
+-				"requested": 0,
+-				"executed": 0,
+-				"rejected": 0,
+-				"timeout": 0
+-			}
+-		},
+-		"upstream": {
+-			"bitswap": {
+-				"requested": 0,
+-				"executed": 0,
+-				"rejected": 0,
+-				"timeout": 0
+-			},
+-			"sra": {
+-				"requested": 0,
+-				"executed": 0,
+-				"rejected": 0,
+-				"timeout": 0
+-			},
+-			"sos": {
+-				"requested": 0,
+-				"executed": 0,
+-				"rejected": 0,
+-				"timeout": 0
+-			}
+-		}
+-	},
+-	"errors": {
+-		"near": {
+-			"es": 0,
+-			"ses": 0,
+-			"loss": 9,
+-			"uas": 6805,
+-			"lofs": 0,
+-			"fecs": 28,
+-			"leftrs": 2,
+-			"cv_c": 0,
+-			"fec_c": 4,
+-			"hec": 0,
+-			"ibe": 0,
+-			"crc_p": 0,
+-			"crcp_p": 0,
+-			"cv_p": 6,
+-			"cvp_p": 0,
+-			"rx_corrupted": 94751,
+-			"rx_uncorrected_protected": 94658,
+-			"rx_retransmitted": 0,
+-			"rx_corrected": 93,
+-			"tx_retransmitted": 58579
+-		},
+-		"far": {
+-			"es": 908,
+-			"ses": 272,
+-			"loss": 3,
+-			"uas": 6805,
+-			"lofs": 0,
+-			"fecs": 200239,
+-			"leftrs": 1597,
+-			"cv_c": 2691,
+-			"fec_c": 6638076,
+-			"hec": 0,
+-			"ibe": 0,
+-			"crc_p": 0,
+-			"crcp_p": 0,
+-			"cv_p": 0,
+-			"cvp_p": 0,
+-			"rx_corrupted": 8596630,
+-			"rx_uncorrected_protected": 7792122,
+-			"rx_retransmitted": 0,
+-			"rx_corrected": 804508,
+-			"tx_retransmitted": 4581378
+-		}
++		"data_rate": 116799,
++		"attndr": 143821,
++		"snr": 104,
++		"latn": 67,
++		"satn": 67,
++		"actatp": 107,
++		"interleave_delay": 0,
++		"inp": 0
+ 	},
+-	"erb": {
+-		"sent": 132,
+-		"discarded": 0
+-	}
++	"api_version": "4.0",
++	"chipset": "EcoNet EN75xx"
+ }

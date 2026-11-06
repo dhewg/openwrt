@@ -1,0 +1,101 @@
+warning: unused import: `std::ptr`
+ --> crates/tinyln_rs/src/msg.rs:9:5
+  |
+9 | use std::ptr;
+  |     ^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `std::os::fd::AsRawFd`
+ --> crates/tinyln_rs/src/socket.rs:7:5
+  |
+7 | use std::os::fd::AsRawFd;
+  |     ^^^^^^^^^^^^^^^^^^^^
+
+warning: unused variable: `family`
+  --> crates/tinyln_rs/src/socket.rs:57:31
+   |
+57 |     pub fn send_simple(&self, family: i32, msg_type: i32, flags: i32, payload: &[u8]) -> io::Result<()> {
+   |                               ^^^^^^ help: if this is intentional, prefix it with an underscore: `_family`
+   |
+   = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: method `as_ptr` is never used
+   --> crates/tinyln_rs/src/socket.rs:108:19
+    |
+ 28 | impl NlSocket {
+    | ------------- method in this implementation
+...
+108 |     pub(crate) fn as_ptr(&self) -> *mut nl_sock {
+    |                   ^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `tinyln-rs` (lib) generated 4 warnings (run `cargo fix --lib -p tinyln-rs` to apply 3 suggestions)
+
+warning: unused import: `rbctl_proto::oem::pack::Modulation`
+  --> crates/rbctl_dsl/src/daemon/snapshot.rs:13:5
+   |
+13 | use rbctl_proto::oem::pack::Modulation;
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `rbctl_proto::oem::unpack::LineState`
+  --> crates/rbctl_dsl/src/daemon/snapshot.rs:14:5
+   |
+14 | use rbctl_proto::oem::unpack::LineState;
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: method `compatible_with` is never used
+  --> crates/rbctl_dsl/src/config.rs:89:12
+   |
+44 | impl XferMode {
+   | ------------- method in this implementation
+...
+89 |     pub fn compatible_with(self, m: Modulation) -> bool {
+   |            ^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: field `fd` is never read
+   --> crates/rbctl_dsl/src/daemon/mod.rs:105:5
+    |
+104 | struct PidLock {
+    |        ------- field in this struct
+105 |     fd: std::os::unix::io::OwnedFd,
+    |     ^^
+
+warning: method `transport_vlan` is never used
+   --> crates/rbctl_dsl/src/daemon/mod.rs:423:8
+    |
+210 | impl Daemon {
+    | ----------- method in this implementation
+...
+423 |     fn transport_vlan(&self) -> u16 {
+    |        ^^^^^^^^^^^^^^
+
+warning: direct cast of function item into an integer
+  --> crates/rbctl_dsl/src/daemon/mod.rs:79:42
+   |
+79 |         sa.sa_sigaction = handle_sigterm as usize;
+   |                                          ^^^^^^^^
+   |
+   = note: `#[warn(function_casts_as_integer)]` on by default
+help: first cast to a pointer `as *const ()`
+   |
+79 |         sa.sa_sigaction = handle_sigterm as *const () as usize;
+   |                                          ++++++++++++
+
+warning: direct cast of function item into an integer
+  --> crates/rbctl_dsl/src/daemon/mod.rs:84:45
+   |
+84 |         sa_hup.sa_sigaction = handle_sighup as usize;
+   |                                             ^^^^^^^^
+   |
+help: first cast to a pointer `as *const ()`
+   |
+84 |         sa_hup.sa_sigaction = handle_sighup as *const () as usize;
+   |                                             ++++++++++++
+
+warning: `rbctl_dsl` (bin "rbctl-dsl") generated 7 warnings (run `cargo fix --bin "rbctl-dsl" -p rbctl_dsl` to apply 4 suggestions)
