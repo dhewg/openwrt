@@ -1,0 +1,25 @@
+From b32c655377f9d92a35effe9d353360806d06250c Mon Sep 17 00:00:00 2001
+From: Andre Heider <a.heider@gmail.com>
+Date: Sun, 8 Nov 2026 16:18:04 +0100
+Subject: [PATCH] Remove Daemon::transport_vlan()
+
+DataLink::transport_vlan() handles this.
+---
+ rbctl-feed/rbctl-dsl/crates/rbctl_dsl/src/daemon/mod.rs | 6 ------
+ 1 file changed, 6 deletions(-)
+
+--- a/rbctl-feed/rbctl-dsl/crates/rbctl_dsl/src/daemon/mod.rs
++++ b/rbctl-feed/rbctl-dsl/crates/rbctl_dsl/src/daemon/mod.rs
+@@ -418,12 +418,6 @@ impl Daemon {
+ 
+     // ── queries ──────────────────────────────────────────────────────────
+ 
+-    /// Requested transport VLAN id — computed here, never in the worker
+-    /// (the worker only owns the management transport).
+-    fn transport_vlan(&self) -> u16 {
+-        self.cfg.transport_vlan_base as u16 + constants::VLAN_TRANSPORT_BASE_OFFSET
+-    }
+-
+     /// Whether a firmware upgrade is in progress (checked under the state
+     /// mutex — the same lock the worker uses to publish progress).
+     fn flashing(&self) -> bool {

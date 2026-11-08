@@ -1,0 +1,26 @@
+From b55d853db16396044e8f287976afb57b93154070 Mon Sep 17 00:00:00 2001
+From: Andre Heider <a.heider@gmail.com>
+Date: Sun, 8 Nov 2026 16:19:28 +0100
+Subject: [PATCH] Fix "direct cast of function item into an integer" warnings
+
+---
+ rbctl-feed/rbctl-dsl/crates/rbctl_dsl/src/daemon/mod.rs | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+--- a/rbctl-feed/rbctl-dsl/crates/rbctl_dsl/src/daemon/mod.rs
++++ b/rbctl-feed/rbctl-dsl/crates/rbctl_dsl/src/daemon/mod.rs
+@@ -76,12 +76,12 @@ extern "C" fn handle_sighup(_sig: libc::
+ fn install_signal_handlers() {
+     unsafe {
+         let mut sa: libc::sigaction = std::mem::zeroed();
+-        sa.sa_sigaction = handle_sigterm as usize;
++        sa.sa_sigaction = handle_sigterm as *const () as usize;
+         libc::sigaction(libc::SIGTERM, &sa, std::ptr::null_mut());
+         libc::sigaction(libc::SIGINT, &sa, std::ptr::null_mut());
+ 
+         let mut sa_hup: libc::sigaction = std::mem::zeroed();
+-        sa_hup.sa_sigaction = handle_sighup as usize;
++        sa_hup.sa_sigaction = handle_sighup as *const () as usize;
+         libc::sigaction(libc::SIGHUP, &sa_hup, std::ptr::null_mut());
+     }
+ }

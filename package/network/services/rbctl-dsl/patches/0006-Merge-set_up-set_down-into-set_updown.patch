@@ -1,0 +1,65 @@
+From 54ecfc89a21c854884c7736e9c7990c74df55b93 Mon Sep 17 00:00:00 2001
+From: Andre Heider <a.heider@gmail.com>
+Date: Sun, 8 Nov 2026 16:54:05 +0100
+Subject: [PATCH] Merge set_up()/set_down() into set_updown()
+
+---
+ .../rbctl-dsl/crates/rbctl_dsl/src/diag/selftest.rs  |  6 +++---
+ .../rbctl-dsl/crates/rbctl_dsl/src/utils/vlan.rs     |  2 +-
+ .../rbctl-dsl/crates/tinyln_rs/src/rtnl/link.rs      | 12 ++++--------
+ 3 files changed, 8 insertions(+), 12 deletions(-)
+
+--- a/rbctl-feed/rbctl-dsl/crates/rbctl_dsl/src/diag/selftest.rs
++++ b/rbctl-feed/rbctl-dsl/crates/rbctl_dsl/src/diag/selftest.rs
+@@ -103,7 +103,7 @@ impl Selftest {
+         }
+         log::info!("bringing up {iface} (was {state:?})...");
+         let mut rtnl = RtnlLink::new().map_err(|e| format!("rtnl: {e}"))?;
+-        rtnl.set_up(iface).map_err(|e| format!("set_up {iface}: {e}"))?;
++        rtnl.set_updown(iface, true).map_err(|e| format!("set_up {iface}: {e}"))?;
+         std::thread::sleep(Duration::from_millis(200));
+         Ok(())
+     }
+@@ -133,8 +133,8 @@ impl Selftest {
+             if !mgmt_link::iface_exists(&name) {
+                 return Err(format!("{name} was not created"));
+             }
+-            rtnl.set_up(&name).map_err(|e| format!("set_up: {e}"))?;
+-            rtnl.set_down(&name).map_err(|e| format!("set_down: {e}"))?;
++            rtnl.set_updown(&name, true).map_err(|e| format!("set_up: {e}"))?;
++            rtnl.set_updown(&name, false).map_err(|e| format!("set_down: {e}"))?;
+             Ok(format!("create→up→down→del {name} (parent idx {parent_idx})"))
+         })();
+ 
+--- a/rbctl-feed/rbctl-dsl/crates/rbctl_dsl/src/utils/vlan.rs
++++ b/rbctl-feed/rbctl-dsl/crates/rbctl_dsl/src/utils/vlan.rs
+@@ -24,7 +24,7 @@ pub fn create_vlan_iface(parent: &str, v
+         Err(e) => return Err(format!("add_vlan {name}: {e}")),
+     };
+ 
+-    rtnl.set_up(&name).map_err(|e| format!("set_up {name}: {e}"))?;
++    rtnl.set_updown(&name, true).map_err(|e| format!("set_up {name}: {e}"))?;
+     Ok(existed)
+ }
+ 
+--- a/rbctl-feed/rbctl-dsl/crates/tinyln_rs/src/rtnl/link.rs
++++ b/rbctl-feed/rbctl-dsl/crates/tinyln_rs/src/rtnl/link.rs
+@@ -153,14 +153,10 @@ impl RtnlLink {
+         self.send(&msg)
+     }
+ 
+-    /// Bring an interface up.
+-    pub fn set_up(&mut self, name: &str) -> io::Result<()> {
+-        self.set_flags(ifindex(name)?, IFF_UP, IFF_UP)
+-    }
+-
+-    /// Bring an interface down.
+-    pub fn set_down(&mut self, name: &str) -> io::Result<()> {
+-        self.set_flags(ifindex(name)?, 0, IFF_UP)
++    /// Bring an interface up or down.
++    pub fn set_updown(&mut self, name: &str, up: bool) -> io::Result<()> {
++        let flags = if up { IFF_UP } else { 0 };
++        self.set_flags(ifindex(name)?, flags, IFF_UP)
+     }
+ 
+     fn set_flags(&mut self, idx: i32, flags: u32, change: u32) -> io::Result<()> {

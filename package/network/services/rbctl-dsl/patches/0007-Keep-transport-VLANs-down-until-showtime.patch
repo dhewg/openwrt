@@ -1,0 +1,56 @@
+From 99cd35c2fb8822fc2f988c8ad083a8398b510c9a Mon Sep 17 00:00:00 2001
+From: Andre Heider <a.heider@gmail.com>
+Date: Sun, 8 Nov 2026 17:14:51 +0100
+Subject: [PATCH] Keep transport VLANs down until showtime
+
+pppd is now started and stopped depending on the line state.
+---
+ .../rbctl-dsl/crates/rbctl_dsl/src/daemon/mod.rs    |  3 +++
+ .../rbctl-dsl/crates/rbctl_dsl/src/utils/vlan.rs    | 13 +++++++++++--
+ 2 files changed, 14 insertions(+), 2 deletions(-)
+
+--- a/rbctl-feed/rbctl-dsl/crates/rbctl_dsl/src/daemon/mod.rs
++++ b/rbctl-feed/rbctl-dsl/crates/rbctl_dsl/src/daemon/mod.rs
+@@ -516,6 +516,9 @@ impl Daemon {
+                 if let Some(script) = self.notify_script.as_deref() {
+                     hotplug::emit_status(script, event);
+                 }
++                for vlan in self.vlans_owned.iter() {
++                    vlan::vlan_iface_updown(&self.parent, *vlan, status.is_up());
++                }
+                 if status.is_up() {
+                     self.on_line_up(data_path, modulation);
+                 }
+--- a/rbctl-feed/rbctl-dsl/crates/rbctl_dsl/src/utils/vlan.rs
++++ b/rbctl-feed/rbctl-dsl/crates/rbctl_dsl/src/utils/vlan.rs
+@@ -9,7 +9,7 @@ pub fn vlan_iface_exists(parent: &str, v
+     crate::utils::mgmt_link::iface_exists(&format!("{parent}.{vlan_id}"))
+ }
+ 
+-/// Create a host-side VLAN sub-interface (`parent.vlan_id`) and bring it up.
++/// Create a host-side VLAN sub-interface (`parent.vlan_id`) and bring it down.
+ ///
+ /// Tolerates `EEXIST` so the call is idempotent after a daemon restart.
+ /// Returns `Ok(true)` when the interface was created by this call, and
+@@ -24,7 +24,7 @@ pub fn create_vlan_iface(parent: &str, v
+         Err(e) => return Err(format!("add_vlan {name}: {e}")),
+     };
+ 
+-    rtnl.set_updown(&name, true).map_err(|e| format!("set_up {name}: {e}"))?;
++    rtnl.set_updown(&name, false).map_err(|e| format!("set_up {name}: {e}"))?;
+     Ok(existed)
+ }
+ 
+@@ -41,3 +41,12 @@ pub fn delete_vlan_iface(parent: &str, v
+         Err(e) => log::warn!("delete {name}: {e}"),
+     }
+ }
++
++/// Bring a host-side VLAN sub-interface (`parent.vlan_id`) up or down
++pub fn vlan_iface_updown(parent: &str, vlan_id: u16, up: bool) {
++    let name = format!("{parent}.{vlan_id}");
++    match RtnlLink::new().and_then(|mut r| r.set_updown(&name, up)) {
++        Ok(()) => log::info!("updown {name}: {up}"),
++        Err(e) => log::warn!("updown {name}: {up}: {e}"),
++    }
++}
