@@ -1,0 +1,30 @@
+From f840d21d652bb3b8ba9becfe20a1490badd926cf Mon Sep 17 00:00:00 2001
+From: Andre Heider <a.heider@gmail.com>
+Date: Sun, 8 Nov 2026 16:12:27 +0100
+Subject: [PATCH] Set allow(dead_code) attribute on unused functions
+
+---
+ rbctl-feed/rbctl-dsl/crates/rbctl_dsl/src/config.rs | 1 +
+ rbctl-feed/rbctl-dsl/crates/tinyln_rs/src/socket.rs | 1 +
+ 2 files changed, 2 insertions(+)
+
+--- a/rbctl-feed/rbctl-dsl/crates/rbctl_dsl/src/config.rs
++++ b/rbctl-feed/rbctl-dsl/crates/rbctl_dsl/src/config.rs
+@@ -86,6 +86,7 @@ impl XferMode {
+     ///   both are accepted here and the final check runs against the
+     ///   *trained* modulation.
+     /// - Future modes slot in here, e.g. G.fast (G.9701) is PTM-only.
++    #[allow(dead_code)]
+     pub fn compatible_with(self, m: Modulation) -> bool {
+         match m {
+             Modulation::Vdsl2 | Modulation::Multimode => true,
+--- a/rbctl-feed/rbctl-dsl/crates/tinyln_rs/src/socket.rs
++++ b/rbctl-feed/rbctl-dsl/crates/tinyln_rs/src/socket.rs
+@@ -104,6 +104,7 @@ impl NlSocket {
+     }
+ 
+     /// Raw pointer for FFI interop (e.g. with `Unl`).
++    #[allow(dead_code)]
+     pub(crate) fn as_ptr(&self) -> *mut nl_sock {
+         self.ptr
+     }

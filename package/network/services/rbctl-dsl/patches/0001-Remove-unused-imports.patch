@@ -1,0 +1,42 @@
+From 7a4610b2b746f521ff16656feb4655a8c332423c Mon Sep 17 00:00:00 2001
+From: Andre Heider <a.heider@gmail.com>
+Date: Sun, 8 Nov 2026 16:07:54 +0100
+Subject: [PATCH] Remove unused imports
+
+---
+ rbctl-feed/rbctl-dsl/crates/rbctl_dsl/src/daemon/snapshot.rs | 2 --
+ rbctl-feed/rbctl-dsl/crates/tinyln_rs/src/msg.rs             | 1 -
+ rbctl-feed/rbctl-dsl/crates/tinyln_rs/src/socket.rs          | 1 -
+ 3 files changed, 4 deletions(-)
+
+--- a/rbctl-feed/rbctl-dsl/crates/rbctl_dsl/src/daemon/snapshot.rs
++++ b/rbctl-feed/rbctl-dsl/crates/rbctl_dsl/src/daemon/snapshot.rs
+@@ -10,8 +10,6 @@ use super::ipc::StatusSnapshot;
+ use super::Daemon;
+ use super::state::SharedState;
+ use crate::utils::mgmt_link;
+-use rbctl_proto::oem::pack::Modulation;
+-use rbctl_proto::oem::unpack::LineState;
+ 
+ impl Daemon {
+     /// Build a [`StatusSnapshot`] from the current shared state.
+--- a/rbctl-feed/rbctl-dsl/crates/tinyln_rs/src/msg.rs
++++ b/rbctl-feed/rbctl-dsl/crates/tinyln_rs/src/msg.rs
+@@ -6,7 +6,6 @@
+ 
+ use std::io;
+ use std::os::raw::c_void;
+-use std::ptr;
+ 
+ use tinyln_rs_sys::{nl_msg, nlmsghdr};
+ 
+--- a/rbctl-feed/rbctl-dsl/crates/tinyln_rs/src/socket.rs
++++ b/rbctl-feed/rbctl-dsl/crates/tinyln_rs/src/socket.rs
+@@ -4,7 +4,6 @@
+ //! send messages, receive responses, and wait for ACKs.
+ 
+ use std::io;
+-use std::os::fd::AsRawFd;
+ use std::ptr;
+ 
+ use tinyln_rs_sys::nl_sock;

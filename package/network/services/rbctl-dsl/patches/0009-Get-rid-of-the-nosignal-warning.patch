@@ -1,0 +1,118 @@
+From 94bbd90cf8bd9406e46ee708e5f360885fbd6ebf Mon Sep 17 00:00:00 2001
+From: Andre Heider <a.heider@gmail.com>
+Date: Tue, 10 Nov 2026 12:14:58 +0100
+Subject: [PATCH] Get rid of the nosignal warning
+
+Don't spam the logs.
+---
+ .../crates/rbctl_dsl/src/constants.rs         |  6 --
+ .../crates/rbctl_dsl/src/daemon/mod.rs        | 62 -------------------
+ 2 files changed, 68 deletions(-)
+
+--- a/rbctl-feed/rbctl-dsl/crates/rbctl_dsl/src/constants.rs
++++ b/rbctl-feed/rbctl-dsl/crates/rbctl_dsl/src/constants.rs
+@@ -48,12 +48,6 @@ pub const POLL_STALE_TIMEOUT: Duration =
+ /// Delay between the op3 close and the re-apply during restart-line.
+ pub const POLL_RESTART_DELAY: Duration = Duration::from_secs(1);
+ 
+-/// Continuous NoSignal after this long logs a single "line silent"
+-/// diagnostic (detection only — the watchdog never acts: an open modem
+-/// auto-retries on its own, and a closed/no-cable line is outside the
+-/// daemon's authority; Initializing/Handshake never count).
+-pub const NOSIGNAL_WATCHDOG: Duration = Duration::from_secs(30);
+-
+ // ── VLAN: VLAN configuration ────────────────────────────────────────────
+ 
+ /// Transport VLAN id = base index + this offset (e.g. base 0 → VLAN 2000).
+--- a/rbctl-feed/rbctl-dsl/crates/rbctl_dsl/src/daemon/mod.rs
++++ b/rbctl-feed/rbctl-dsl/crates/rbctl_dsl/src/daemon/mod.rs
+@@ -200,11 +200,6 @@ pub(crate) struct Daemon {
+     last_apply: Option<Instant>,
+     /// One TC-layer hotplug emission per Up session.
+     tc_emitted: bool,
+-    /// When the line has been continuously in NoSignal (watchdog dwell).
+-    nosignal_since: Option<Instant>,
+-    /// Whether the current silent episode already logged its warning
+-    /// (one warning per episode; any non-NoSignal state resets both).
+-    nosignal_warned: bool,
+ }
+ 
+ impl Daemon {
+@@ -300,8 +295,6 @@ impl Daemon {
+             links_auto_corrected: Default::default(),
+             last_apply: None,
+             tc_emitted: false,
+-            nosignal_since: None,
+-            nosignal_warned: false,
+         };
+ 
+         // Initial configuration — the only place startup config is decided.
+@@ -383,9 +376,6 @@ impl Daemon {
+                 self.on_worker_event(ev);
+             }
+ 
+-            // NoSignal watchdog — recover a line that trains nowhere.
+-            self.watchdog_tick();
+-
+             // Signals → commands.
+             if RELOAD.swap(false, Ordering::SeqCst) {
+                 self.on_reload();
+@@ -430,58 +420,6 @@ impl Daemon {
+ 
+     // ── event handlers (the gate) ────────────────────────────────────────
+ 
+-    /// NoSignal watchdog — detection and diagnostics only, never action.
+-    ///
+-    /// An *open* modem retries training on its own (field pcaps show
+-    /// minutes of NoSignal↔Initializing cycling with zero host traffic),
+-    /// so re-applying the config while the modem is handshaking is pure
+-    /// noise, and op3 (`wan adsl close`) would kill the auto-retry.
+-    /// Recovery paths elsewhere already cover the actionable cases:
+-    ///
+-    /// - board unreachable → reachable: `BoardReachable` re-opens the
+-    ///   line automatically (and a rebooted board has self-opened);
+-    /// - line closed by a foreign tool or an old daemon: the operator
+-    ///   bounces it explicitly.
+-    ///
+-    /// So after [`constants::NOSIGNAL_WATCHDOG`] (30 s) of *continuous*
+-    /// NoSignal with config applied and the board reachable, log exactly
+-    /// one warning per silent episode — continuous NoSignal with no
+-    /// cycling is the signature of a closed modem or no cable, both
+-    /// outside the daemon's authority. `Initializing`/`EstablishingLink`
+-    /// mean training is in progress and reset the dwell.
+-    fn watchdog_tick(&mut self) {
+-        if self.monitor || !self.config_applied || self.flashing() {
+-            self.nosignal_since = None;
+-            self.nosignal_warned = false;
+-            return;
+-        }
+-        let status = self
+-            .state
+-            .lock()
+-            .unwrap()
+-            .line_obj
+-            .as_ref()
+-            .map(|l| l.link_status);
+-        match status {
+-            Some(LineState::Silent) if !self.nosignal_warned => {
+-                let since = *self.nosignal_since.get_or_insert_with(Instant::now);
+-                if since.elapsed() >= constants::NOSIGNAL_WATCHDOG {
+-                    log::warn!(
+-                        "line silent (NoSignal) for {:?} with no training attempts — \
+-                         modem closed or no cable; manual bounce: rbctl-dsl restart-line",
+-                        since.elapsed()
+-                    );
+-                    self.nosignal_warned = true;
+-                }
+-            }
+-            // Training in progress, Up, or no fresh poll — reset the episode.
+-            _ => {
+-                self.nosignal_since = None;
+-                self.nosignal_warned = false;
+-            }
+-        }
+-    }
+-
+     fn on_worker_event(&mut self, ev: WorkerEvent) {
+         match ev {
+             WorkerEvent::BoardReachable => {

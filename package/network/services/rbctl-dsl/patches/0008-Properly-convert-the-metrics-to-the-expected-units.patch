@@ -1,0 +1,45 @@
+From 61efa01885db8de6fca9b198856d8bf34fc8d992 Mon Sep 17 00:00:00 2001
+From: Andre Heider <a.heider@gmail.com>
+Date: Sun, 8 Nov 2026 19:08:50 +0100
+Subject: [PATCH] Properly convert the metrics to the expected units
+
+---
+ .../rbctl_dsl/src/daemon/ubus_object.rs       | 20 +++++++++++++------
+ 1 file changed, 14 insertions(+), 6 deletions(-)
+
+--- a/rbctl-feed/rbctl-dsl/crates/rbctl_dsl/src/daemon/ubus_object.rs
++++ b/rbctl-feed/rbctl-dsl/crates/rbctl_dsl/src/daemon/ubus_object.rs
+@@ -109,6 +109,14 @@ fn profile_string(profiles: rbctl_proto:
+     parts.join(" ")
+ }
+ 
++fn datarate(metric: u32) -> i32 {
++    return metric as i32 * 1000;
++}
++
++fn decibel(metric: u32) -> f64 {
++    return metric as f64 / 10.0;
++}
++
+ /// Add upstream or downstream metrics sub-table.
+ fn add_direction(bb: &mut BlobBuilder, name: &str, m: &LineMetrics, upstream: bool) {
+     bb.open_table(Some(name));
+@@ -119,12 +127,12 @@ fn add_direction(bb: &mut BlobBuilder, n
+         (m.down_rate, m.down_attainable_rate, m.down_noise_margin, m.down_attenuation, m.down_output_power)
+     };
+ 
+-    bb.put_i32(Some("data_rate"), rate as i32);
+-    bb.put_i32(Some("attndr"), attndr as i32);
+-    bb.put_i32(Some("snr"), snr as i32);
+-    bb.put_i32(Some("latn"), attn as i32);
+-    bb.put_i32(Some("satn"), attn as i32);
+-    bb.put_i32(Some("actatp"), power as i32);
++    bb.put_i32(Some("data_rate"), datarate(rate));
++    bb.put_i32(Some("attndr"), datarate(attndr));
++    bb.put_double(Some("snr"), decibel(snr));
++    bb.put_double(Some("latn"), decibel(attn));
++    bb.put_double(Some("satn"), decibel(attn));
++    bb.put_double(Some("actatp"), decibel(power));
+     bb.put_i32(Some("interleave_delay"), 0);
+     bb.put_i32(Some("inp"), 0);
+ 

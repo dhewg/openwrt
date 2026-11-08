@@ -1,0 +1,20 @@
+From 0ffdf62264cb93d447893c26e7e2856eea573b41 Mon Sep 17 00:00:00 2001
+From: Andre Heider <a.heider@gmail.com>
+Date: Sun, 8 Nov 2026 16:20:48 +0100
+Subject: [PATCH] Remove unused arg "family" from send_simple()
+
+---
+ rbctl-feed/rbctl-dsl/crates/tinyln_rs/src/socket.rs | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/rbctl-feed/rbctl-dsl/crates/tinyln_rs/src/socket.rs
++++ b/rbctl-feed/rbctl-dsl/crates/tinyln_rs/src/socket.rs
+@@ -53,7 +53,7 @@ impl NlSocket {
+     }
+ 
+     /// Send a simple message (type + flags + optional payload).
+-    pub fn send_simple(&self, family: i32, msg_type: i32, flags: i32, payload: &[u8]) -> io::Result<()> {
++    pub fn send_simple(&self, msg_type: i32, flags: i32, payload: &[u8]) -> io::Result<()> {
+         check(unsafe {
+             tinyln_rs_sys::nl_send_simple(
+                 self.ptr,
