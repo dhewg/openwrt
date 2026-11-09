@@ -9,3 +9,10 @@ define Device/zyxel_ex3301-t0
   DEVICE_PACKAGES := kmod-usb3 kmod-mt7915e kmod-mt7915-firmware
 endef
 TARGET_DEVICES += zyxel_ex3301-t0
+
+define Device/remote_board
+  DEVICE_VENDOR := Remote
+  DEVICE_MODEL := Board
+  DEVICE_DTS := en751627_remote_board
+endef
+TARGET_DEVICES += remote_board

@@ -128,6 +128,18 @@
 			spi-max-frequency = <40000000>;
 			spi-tx-bus-width = <1>;
 			spi-rx-bus-width = <2>;
+
+			status = "disabled";
+		};
+
+		nor: nor@0 {
+			compatible = "jedec,spi-nor";
+			reg = <0>;
+			spi-max-frequency = <40000000>;
+			spi-tx-bus-width = <1>;
+			spi-rx-bus-width = <2>;
+
+			status = "disabled";
 		};
 	};
 
@@ -242,5 +254,27 @@
 		interrupt-parent = <&gic>;
 		interrupts = <GIC_SHARED 17 IRQ_TYPE_LEVEL_HIGH>;
 		usb3-lpm-capable;
+	};
+
+	i2cclock: i2cclock@0 {
+		#clock-cells = <0>;
+		compatible = "fixed-clock";
+
+		/* 20 MHz */
+		clock-frequency = <20000000>;
+	};
+
+	i2c0: i2c0@1fbf8000 {
+		compatible = "mediatek,mt7621-i2c";
+		reg = <0x1fbf8000 0x100>;
+
+		clocks = <&i2cclock>;
+
+		/* 100 kHz */
+		clock-frequency = <100000>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		status = "disabled";
 	};
 };

@@ -1,0 +1,77 @@
+// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+/dts-v1/;
+
+#include "en751627.dtsi"
+
+/ {
+	model = "Remote Board";
+	compatible = "econet,en751627";
+
+	memory@0 {
+		device_type = "memory";
+		reg = <0x00000000 0x8000000>;
+	};
+
+	chosen {
+		stdout-path = "/serial@1fbf0000:115200";
+	};
+};
+
+&nor {
+	status = "okay";
+
+	partitions {
+		compatible = "fixed-partitions";
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		partition@0 {
+			label = "bootloader";
+			reg = <0x0 0x20000>;
+			read-only;
+		};
+
+		partition@20000 {
+			label = "romfile";
+			reg = <0x20000 0x10000>;
+			read-only;
+		};
+
+		partition@30000 {
+			label = "tclinux";
+			reg = <0x30000 0x7e0000>;
+			read-only;
+		};
+
+		partition@810000 {
+			label = "tclinux_slave";
+			reg = <0x810000 0x760000>;
+			read-only;
+		};
+
+		partition@f70000 {
+			label = "reservearea";
+			reg = <0xf70000 0x90000>;
+			read-only;
+		};
+	};
+};
+
+&pcie0 {
+	status = "okay"; // nothing connected?
+};
+
+&pcie1 {
+	status = "okay"; // nothing connected?
+};
+
+&i2c0 {
+	status = "okay"; // nothing connected?
+};
+
+/*
+	maybe useful for ethernet?
+https://github.com/openwrt/openwrt/pull/25330
+https://github.com/openwrt/openwrt/pull/25475
+https://github.com/cjdelisle/econet_eth/pull/16
+*/
