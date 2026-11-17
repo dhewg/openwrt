@@ -1,0 +1,29 @@
+From 9f0952c36b2756378209819f26f7b7e5a8ba9a8d Mon Sep 17 00:00:00 2001
+From: Andre Heider <a.heider@gmail.com>
+Date: Mon, 16 Nov 2026 10:58:25 +0100
+Subject: [PATCH] socket: fix create() protocol endian bug
+
+Fixes SOCK_RAW, but unsure if this is the correct fix.
+See https://github.com/ucode-lang/ucode/issues/520
+
+Signed-off-by: Andre Heider <a.heider@gmail.com>
+---
+ lib/socket.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/lib/socket.c b/lib/socket.c
+index f44c01b1..cb4941dc 100644
+--- a/lib/socket.c
++++ b/lib/socket.c
+@@ -3452,7 +3452,7 @@ uc_socket_create(uc_vm_t *vm, size_t nargs)
+ #else
+ 		socktype,
+ #endif
+-		protocol ? (int)ucv_int64_get(protocol) : 0);
++		protocol ? (int)htons(ucv_int64_get(protocol)) : 0);
+ 
+ 	if (sockfd == -1)
+ 		err_return(errno, "socket()");
+-- 
+2.53.0
+
