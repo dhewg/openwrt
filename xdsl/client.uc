@@ -178,6 +178,10 @@ let client = {
 			return false;
 		if (ret == 0)
 			uloop.timer(50, () => instance.create_vlan(true));
+		/* TODO retries?
+		else
+			uloop.timer(50, () => instance.create_remote_link());
+		*/
 	},
 	response_16: function(payload) { // ptm_link_del
 		return this.check_remote_error("ptm_link_del", payload);
